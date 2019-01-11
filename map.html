@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-Equiv="Cache-Control" Content="no-cache" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Bank branches</title>
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
+  <script>
+    let map;
+
+    function initMap() {
+        const pyrmont = { lat: 11.9653882, lng: 104.9204233 };
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: pyrmont,
+          zoom: 8
+        });
+
+        infowindow = new google.maps.InfoWindow();
+        const service = new google.maps.places.PlacesService(map);
+        service.textSearch({
+          query: 'aba bank cambodia',
+          location: pyrmont
+        }, callback);
+      }
+
+      function callback(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          for (let i = 0; i < results.length; i++) {
+            createMarker(results[i]);
+          }
+        }
+      }
+
+      function createMarker(place) {
+        const placeLoc = place.geometry.location;
+        const marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.setContent(place.name);
+          infowindow.open(map, this);
+        });
+      }
+  </script>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://maps.googleapis.com/maps/api/js?key=[YOUR_GOOGLE_KEY]&libraries=places&callback=initMap" 
+    async defer></script>
+</body>
+</html>

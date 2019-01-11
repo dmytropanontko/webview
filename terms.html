@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Terms & Conditions</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F2F1F2;
+      padding: 10px;
+    }
+    .terms {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .terms-text {
+      background-color: #fff;
+      padding: 10px;
+    }
+    .title {
+      text-align: center;
+    }
+    .button {
+      background-color: #5987D4;
+      border: none;
+      color: white;
+      width: 80%;
+      padding: 7px;
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      -webkit-transition-duration: 0.4s;
+      transition-duration: 0.4s;
+      border-radius: 15px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .button:hover {
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,0.24), 0 3px 10px 0 rgba(0,0,0,0.19);
+    }
+  </style>
+</head>
+<body>
+  <div class="terms">
+    <h1 class="title">Terms & Conditions</h1>
+    <div class="terms-text">
+      <h2>Terms of Use</h2>
+      <h3>About this website</h3>
+      <p>
+        This website is operated by Advanced Bank of Asia Limited ("ABA Bank" or "ABA") under the domain names "www.ababank.net" and <a href="https://www.ababank.com/">"www.ababank.com"</a> ("website").
+        Your use of the information, graphics and materials on the website is governed by these Terms of Use and the Privacy Policy.
+        In addition to the terms contained in this document, there are also specific terms which form part of the Terms of Use and govern your use of, and access to, certain sections of the website. Since you are also bound by these additional terms, you should review them wherever they are accessible by you on the website.
+      </p>
+      <h3>Links to other websites</h3>
+      <p>
+        The ABA Bank website may contain links to other websites operated by third parties. You should understand and accept that ABA Bank does not endorse, or approve of the operators of third party websites, or the information, graphics and material on those websites.
+        All offers to sell and statements relating to goods and services available on third party websites are the responsibility of and given by that third party website operator. ABA Bank may receive payments from operators of third party websites in relation to goods or services supplied by the operator as a result of you linking to those websites from ABA Bank’s website.
+      </p>
+      <h3>Copyright</h3>
+      <p>
+        All copyrights on this website are owned or licensed by ABA Bank.No material on this website may be reproduced, adapted, uploaded to a third party, linked to, framed, performed in public, distributed or transmitted in any form by any process without the specific written consent of ABA Bank.
+        ABA, ABA Point, ABA Priority and all associated trademarks, are trademarks of Advanced Bank of Asia Limited.
+      </p>
+      <p>
+        Creating a link to ABA Bank website,
+        contact ABA in written form if you would like to place a link to any part of the ABA Bank website.
+      </p>
+    </div>
+    <input class="button" type="submit" value="ACCEPT" id="submitButton">
+  </div>
+
+  <script>
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/messenger.Extensions.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'Messenger'));
+
+    const user = {};
+    window.onload = event => {
+      const queries = new URLSearchParams(window.location.search).entries()
+
+      for(const pair of queries) {
+        const el = document.querySelector(`#${pair[0]}`)
+
+        user[pair[0]] = pair[1]
+        if (el) {
+          el.value = pair[1]
+        }
+      }
+    };
+    
+    document.querySelector('#submitButton').addEventListener('click', function () {
+      fetch(`https://[url]/api/botpress-image-scan/webview/term?userId=${user.userId}`, {
+        mode: 'no-cors'
+      })
+      .then(() => {
+        MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+          }, function error(err) {
+            console.error('MessengerExtensions')
+          });
+      })
+      .catch(() => {
+        MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+          }, function error(err) {
+            console.error('MessengerExtensions')
+          });
+      })
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document Editor</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F2F1F2;
+      padding: 10px;
+    }
+
+    .form-sub {
+      border-radius: 10px;
+      margin: 10px;
+      font-family: sans-serif;
+      min-width: 300px;
+      max-width: 500px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-sub__title {
+      color: rgb(78, 78, 78);
+      text-align: center;
+    }
+
+    .field {
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .field__title {
+      margin: 3px 0;
+      color: #777;
+      font-size: 16px;
+      font-weight: 300;
+      padding-left: 25px;
+    }
+
+    .field__input {
+      width: 100%;
+      outline: none;
+      padding: 7px 7px 7px 25px;
+      margin-top: 7px;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+      border-right: none;
+      border-left: none;
+    }
+
+    .field__input:focus {
+      border-top: 1px solid #5987D4;
+      border-bottom: 1px solid #5987D4;
+    }
+
+    .label {
+      margin-top: 20px;
+    }
+
+    .button {
+      background-color: #5987D4;
+      border: none;
+      color: white;
+      width: 100%;
+      padding: 7px;
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      -webkit-transition-duration: 0.4s;
+      transition-duration: 0.4s;
+      border-radius: 15px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .button:hover {
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,0.24), 0 3px 10px 0 rgba(0,0,0,0.19);
+    }
+
+    .process-status {
+      height: 30px;
+      width: 100%;
+      position: relative;
+    }
+
+    .status-processing {
+      position: absolute;
+      color: #5987D4;
+      text-align: center;
+    }
+
+    .status-success {
+      position: absolute;
+      color: green;
+      text-align: center;
+    }
+
+    .status-error {
+      position: absolute;
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <form class="form-sub" id="form-sub">
+    <h2 class="form-sub__title">Document Editor</h2>
+    <label class="label" for="firstname">First name</label>
+    <input id="firstname" class="field__input" type="text" name="firstname">
+    <label class="label" for="lastname">Last name</label>
+    <input id="lastname" class="field__input" type="text" name="lastname">
+    <label class="label" for="dob">Date of birth</label>
+    <input id="dob" class="field__input" type="text" name="dob">
+    <label class="label" for="id">ID number</label>
+    <input id="id" class="field__input" type="text" name="id">
+    <label class="label" for="expirationday">ID expiry date</label>
+    <input id="expirationday" class="field__input" type="text" name="expirationday">
+
+    <input class="button" type="submit" value="SAVE AND ACCEPT" id="submitButton">
+  </form>
+  <script>
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/messenger.Extensions.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'Messenger'));
+    let id;
+    const user = {};
+    window.onload = event => {
+      const queries = new URLSearchParams(window.location.search).entries()
+
+      for(const pair of queries) {
+        const el = document.querySelector(`#${pair[0]}`)
+
+        user[pair[0]] = pair[1]
+        if (el) {
+          el.value = pair[1]
+        }
+      }
+    };
+
+    document.querySelector('#form-sub').addEventListener('submit', function (event) {
+      event.preventDefault();
+      const formData = new FormData(document.querySelector('#form-sub'))
+      const object = {};
+      formData.forEach(function(value, key){
+          object[key] = value;
+      });
+      const json = JSON.stringify({ ...object, userId: user.userId });
+
+      fetch('https://[url]/ocr', {
+        method: 'POST',
+        body: json,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type' : 'application/json' 
+        }
+      })
+      .then(() => {
+        MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+          }, function error(err) {
+            console.error('MessengerExtensions')
+          });
+      })
+      .catch(() => {
+        MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+          }, function error(err) {
+            console.error('MessengerExtensions')
+          });
+      })
+    })
+  </script>
+</body>
+</html>

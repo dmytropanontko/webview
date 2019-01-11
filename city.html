@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-Equiv="Cache-Control" Content="no-cache" />
+  <meta http-Equiv="Pragma" Content="no-cache" />
+  <meta http-Equiv="Expires" Content="0" />
+  <title>Living Address</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #F2F1F2;
+      padding: 10px;
+    }
+
+    .form-sub {
+      border-radius: 10px;
+      margin: 10px;
+      font-family: sans-serif;
+      min-width: 300px;
+      max-width: 500px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-sub__title {
+      color: rgb(78, 78, 78);
+      text-align: center;
+    }
+
+    .field {
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    .field__title {
+      margin: 3px 0;
+      color: #777;
+      font-size: 16px;
+      font-weight: 300;
+      padding-left: 25px;
+    }
+
+    .field__input {
+      width: 100%;
+      outline: none;
+      padding: 7px 7px 7px 25px;
+      margin-top: 7px;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+      border-right: none;
+      border-left: none;
+    }
+
+    .field__input:focus {
+      border-top: 1px solid #5987D4;
+      border-bottom: 1px solid #5987D4;
+    }
+
+    .label {
+      margin-top: 20px;
+    }
+
+    .button {
+      background-color: #5987D4;
+      border: none;
+      color: white;
+      width: 100%;
+      padding: 7px;
+      margin-top: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      -webkit-transition-duration: 0.4s;
+      transition-duration: 0.4s;
+      border-radius: 15px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .button:hover {
+      box-shadow: 0 2px 5px 0 rgba(0,0,0,0.24), 0 3px 10px 0 rgba(0,0,0,0.19);
+    }
+
+    .process-status {
+      height: 30px;
+      width: 100%;
+      position: relative;
+    }
+
+    .status-processing {
+      position: absolute;
+      color: #5987D4;
+      text-align: center;
+    }
+
+    .status-success {
+      position: absolute;
+      color: green;
+      text-align: center;
+    }
+
+    .status-error {
+      position: absolute;
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <form class="form-sub" id="form-sub">
+    <h2 class="form-sub__title">Living Address</h2>
+    <input type="hidden" name="psid" id="psid">
+    <label class="label" for="province">Province</label>
+    <input id="province" class="field__input" type="text" name="province">
+    <label class="label" for="district">District</label>
+    <input id="district" class="field__input" type="text" name="district">
+    <label class="label" for="commune">Commune</label>
+    <input id="commune" class="field__input" type="text" name="commune">
+    <div id="status" class="process-status"></div>
+    <input class="button" type="submit" value="Submit Address" id="submitButton">
+  </form>
+  <script>
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/messenger.Extensions.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'Messenger'));
+
+    let province = '';
+    let district = '';
+    let commune = '';
+
+    document.querySelector('input[name="province"]').addEventListener('change', function(event) {
+      event.preventDefault();
+
+      province = event.target.value;
+    }, false);
+    document.querySelector('input[name="district"]').addEventListener('change', function(event) {
+      event.preventDefault();
+
+      district = event.target.value;
+    }, false);
+    document.querySelector('input[name="commune"]').addEventListener('change', function(event) {
+      event.preventDefault();
+
+      commune = event.target.value;
+    }, false);
+
+    let id = '';
+
+    document.querySelector('#form-sub').addEventListener('submit', function () {
+      event.preventDefault();
+      // const place = city.getPlace();
+      const body = JSON.stringify({
+        address: {
+          province,
+          district,
+          commune
+        },
+        id
+      });
+
+      const statusDiv = document.querySelector('#status');
+      while (statusDiv.firstChild) {
+        statusDiv.removeChild(statusDiv.firstChild);
+      }
+
+      const processingStatus = document.createElement('p');
+      processingStatus.innerText = 'Processing ...'
+      processingStatus.className = 'status-processing'
+      statusDiv.appendChild(processingStatus)
+
+      fetch(`https://[url]/place?id=${id}&address=${body}`)
+        .then(() => {
+          const successStatus = document.createElement('p');
+          successStatus.innerText = 'Sended'
+          successStatus.className = 'status-success'
+          statusDiv.removeChild(statusDiv.firstChild);
+          statusDiv.appendChild(successStatus);
+          MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+            // webview closed
+          }, function error(err) {
+            // an error occurred
+            console.error('MessengerExtensions')
+          });
+        })
+        .catch(err => {
+          console.error('err: ', err);
+          MessengerExtensions.requestCloseBrowser(function success() {
+            console.log('MessengerExtensions')
+            // webview closed
+          }, function error(err) {
+            // an error occurred
+            console.error('MessengerExtensions')
+          });
+        })
+    }, false)
+
+    window.onload = function() {
+      const user = {}
+      const queries = new URLSearchParams(window.location.search).entries()
+
+      for(const pair of queries) {
+        user[pair[0]] = pair[1]
+      }
+
+      id = user.userId
+    }
+  </script>
+</body>
+</html>
